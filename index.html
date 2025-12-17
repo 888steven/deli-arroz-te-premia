@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sorpresa Azul ❤️🤍</title>
+  <style>
+    body {
+      font-family: 'Poppins', Arial, sans-serif;
+      background:
+        linear-gradient(180deg, #ffffff 0%, #0b3c5d 50%, #c1121f 100%),
+        url('https://images.unsplash.com/photo-1604908177225-6d1c5c6b6f66');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      text-align: center;
+      padding: 30px 15px;
+      color: #0b3c5d;
+    }
+
+    h1 { font-size: 30px; margin-bottom: 8px; color: #c1121f; }
+    p { font-size: 15px; color: #1f2937; margin-bottom: 25px; }
+    .menu { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; max-width: 420px; margin: 0 auto; }
+    button {
+      padding: 22px 10px; font-size: 16px; border: 2px dashed #0b3c5d; border-radius: 22px;
+      background: linear-gradient(135deg, #f9fafb, #e5e7eb); color: #0b3c5d; cursor: pointer;
+      transition: all 0.25s ease; box-shadow: 0 6px 0 rgba(11,60,93,0.6); position: relative; overflow: hidden;
+    }
+    button::after { content: '❓'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 26px; opacity: 0.25; pointer-events: none; transition: opacity 0.2s ease; }
+    button:hover::after { opacity: 0.6; } button:hover { transform: translateY(-4px) scale(1.03); } button:active { transform: translateY(2px) scale(0.98); }
+    .winner { background: #0b3c5d !important; color: #ffffff !important; } .loser { background: #c1121f !important; color: #ffffff !important; }
+    .overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(4px); }
+    .overlay.win { background: rgba(11, 60, 93, 0.9); } .overlay.lose { background: rgba(193, 18, 31, 0.9); }
+    .overlay-content { background: #ffffff; padding: 40px 25px; border-radius: 25px; max-width: 320px; text-align: center; animation: pop 0.4s ease; }
+    @keyframes pop { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <h1>🎁 Deli Arroz te premia</h1>
+  <p>Escoge una opción<br />🔵⚪🔴 Solo <strong>5</strong> ganan arroz con leche</p>
+  <div class="menu" id="menu"></div>
+  <div class="footer">Gracias por participar 💙❤️</div>
+
+  <div class="overlay win" id="winOverlay">
+    <div class="overlay-content">
+      <h2>🎉 ¡FELICIDADES!</h2>
+      <p>Como agradecimiento por ser un <strong>fiel comprador</strong>,<br /><strong>Deli Arroz</strong> te obsequia<br />un <strong>delicioso arroz con leche</strong> 🍚💙</p>
+      <p>Muestra esta pantalla para reclamar tu premio</p>
+    </div>
+  </div>
+
+  <div class="overlay lose" id="loseOverlay">
+    <div class="overlay-content">
+      <h2>😢 ¡Gracias por participar!</h2>
+      <p>Esta vez no ganaste,<br />pero Deli Arroz te espera 💙</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_KEY = 'deliarroz_eligio';
+      const menu = document.getElementById('menu');
+      let yaEligio = localStorage.getItem(STORAGE_KEY) === 'true';
+      const resultados = Array(5).fill(true).concat(Array(5).fill(false));
+      resultados.sort(() => Math.random() - 0.5);
+
+      if (yaEligio) {
+        const msg = document.createElement('p'); msg.style.marginTop = '20px'; msg.style.fontWeight = 'bold';
+        msg.textContent = '🔒 Ya participaste. Gracias por jugar con Deli Arroz 💙❤️'; document.body.insertBefore(msg, menu);
+      }
+
+      resultados.forEach(function (esGanador, index) {
+        const btn = document.createElement('button'); btn.textContent = '⭐ Opción ' + (index + 1);
+        btn.addEventListener('click', function () {
+          if (yaEligio) return; yaEligio = true; localStorage.setItem(STORAGE_KEY, 'true');
+          document.querySelectorAll('.menu button').forEach(b => b.disabled = true);
+          if (esGanador) { btn.classList.add('winner'); btn.textContent = '🎉 ¡GANASTE! 🍚'; document.getElementById('winOverlay').style.display = 'flex'; }
+          else { btn.classList.add('loser'); btn.textContent = '❌ No fue esta vez'; document.getElementById('loseOverlay').style.display = 'flex'; }
+        });
+        menu.appendChild(btn);
+      });
+
+      document.querySelectorAll('.overlay').forEach(o => { o.addEventListener('click', () => { o.style.display = 'none'; }); o.querySelector('.overlay-content').addEventListener('click', e => e.stopPropagation()); });
+    })();
+  </script>
+</body>
+</html>
